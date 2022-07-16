@@ -9,7 +9,6 @@ estacionamento = [
                    valorEvento=40, horarios={6, 22}, capacidade=600, retorno=0.7),
 ]
 
-
 def testaCadastroUmVeiculo():
     estacionamento[0].AddAcesso('HI139', '08:30', '08:56')
     estacionamento[0].AddAcesso('G49NG', '19:01', '07:50')
@@ -19,18 +18,50 @@ def testaCadastroUmVeiculo():
 
     assert (estacionamento[0].getAcessos()) != 0
 
-def testaTipoAcessoPorPlaca():
+def testaTipoAcessoPorPlaca1():
     estacionamento[0].AddAcesso('AM31J', 'Evento', 'Evento')
-
     assert estacionamento[0].FindTipoAcesso('AM31J') == 'Evento'
 
-def testaValorAcesso():
-    estacionamento[0].AddAcesso('AM31J', 'Evento', 'Evento')
+def testaTipoAcessoPorPlaca2():
+    estacionamento[0].AddAcesso('RM3A9', '', '')
+    assert estacionamento[0].FindTipoAcesso('RM3A9') == 'Noturno'
 
+def testaTipoAcessoPorPlaca3():
+    estacionamento[0].AddAcesso('G49NG', '19:01', '07:50')
+    assert estacionamento[0].FindTipoAcesso('G49NG') == 'Mensalista'
+
+def testaTipoAcessoPorPlaca4():
+    estacionamento[0].AddAcesso('HI139', '08:30', '08:56')
+    assert estacionamento[0].FindTipoAcesso('HI139') == 'Comum'
+
+def testaValorAcesso1():
+    estacionamento[0].AddAcesso('AM31J', 'Evento', 'Evento')
     assert estacionamento[0].GetValorAcesso('AM31J') == 50
 
+def testaValorAcesso2():
+    estacionamento[0].AddAcesso('RM3A9', '', '')
+    assert estacionamento[0].GetValorAcesso('RM3A9') == 54
 
-def testaValorContratante():
+def testaValorAcesso3():
+    estacionamento[0].AddAcesso('G49NG', '19:01', '07:50')
+    assert estacionamento[0].GetValorAcesso('G49NG') == 600
+
+def testaValorAcesso4():
+    estacionamento[0].AddAcesso('HI139', '08:30', '08:56')
+    assert estacionamento[0].GetValorAcesso('HI139') == 60
+
+def testaValorContratante1():
     estacionamento[0].AddAcesso('AM31J', 'Evento', 'Evento')
-
     assert estacionamento[0].GetValorContratante('AM31J') == 25
+
+def testaValorContratante2():
+    estacionamento[0].AddAcesso('RM3A9', '', '')
+    assert estacionamento[0].GetValorContratante('RM3A9') == 27
+
+def testaValorContratante3():
+    estacionamento[0].AddAcesso('G49NG', '19:01', '07:50')
+    assert estacionamento[0].GetValorContratante('G49NG') == 300
+
+def testaValorContratante4():
+    estacionamento[0].AddAcesso('HI139', '08:30', '08:56')
+    assert estacionamento[0].GetValorContratante('HI139') == 30
