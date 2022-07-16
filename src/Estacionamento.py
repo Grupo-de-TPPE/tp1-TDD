@@ -1,9 +1,21 @@
 from src.Acesso import Acesso
+import datetime
+import math
 
 
 class Estacionamento:
-    def __init__(self, valorFracao, valorHoraCheia, valorDiariaDiurna, valorDiariaNoturna, mensalidade, valorEvento,
-                 horarios, capacidade, retorno):
+    def __init__(
+        self,
+        valorFracao,
+        valorHoraCheia,
+        valorDiariaDiurna,
+        valorDiariaNoturna,
+        mensalidade,
+        valorEvento,
+        horarios,
+        capacidade,
+        retorno,
+    ):
         self.valorFracao = valorFracao
         self.valorHoraCheia = valorHoraCheia
         self.valorDiariaDiurna = valorDiariaDiurna
@@ -24,35 +36,72 @@ class Estacionamento:
     def getAcessos(self):
         return self.acessos
 
+    def getPermanencia(self, placa):
+        for i in self.acessos:
+            # print(f"{i.placa}={i.horaEntrada}")
+            if i.placa == placa:
+                if i.horaEntrada == "Evento":
+                    return [
+                        "Evento",
+                    ]
+                elif i.horaEntrada == "Mensalista":
+                    return [
+                        "Mensalista",
+                    ]
+
+                entrada = datetime.time(
+                    hour=int(i.horaEntrada.split(":")[0]),
+                    minute=int(i.horaEntrada.split(":")[1]),
+                )
+                saida = datetime.time(
+                    hour=int(i.horaSaida.split(":")[0]),
+                    minute=int(i.horaSaida.split(":")[1]),
+                )
+                t1 = datetime.timedelta(hours=entrada.hour, minutes=entrada.minute)
+                t2 = datetime.timedelta(hours=saida.hour, minutes=saida.minute)
+                delta = t2 - t1
+
+                if t1 > t2:
+                    return [
+                        "Noturna",
+                    ]
+                if delta.seconds > 32400:
+                    return [
+                        "Diurna",
+                    ]
+
+                return [delta.seconds // 3600, delta.seconds % 3600 // 60]
+
     def FindTipoAcesso(self, placa):
-        if placa == 'AM31J':
-            return 'Evento'
-        if placa == 'RM3A9':
-            return 'Noturno'
-        if placa == 'HI139':
-            return 'Comum'
-        if placa == 'G49NG':
-            return 'Mensalista'
-        return -1
+        permanencia = self.getPermanencia(placa)
+        if permanencia[0] == "Evento":
+            return "Evento"
+        elif permanencia[0] == "Noturna":
+            return "Noturna"
+        elif permanencia[0] == "Diurna":
+            return "Diurna"
+        elif permanencia[0] == "Mensalista":
+            return "Mensalista"
+        else:
+            return f"{permanencia[0]}:{permanencia[1]}"
 
-    def GetValorAcesso(self, param):
-        if param == 'AM31J':
-            return 50
-        if param == 'RM3A9':
-            return 54
-        if param == 'HI139':
-            return 60
-        if param == 'G49NG':
-            return 600
-        return -1
+    def GetValorAcesso(self, placa):
+        tipoAcesso = self.FindTipoAcesso(placa)
+        if tipoAcesso == "Evento":
+            return self.valorEvento
+        elif tipoAcesso == "Noturna":
+            return self.valorDiariaNoturna * self.valorDiariaDiurna
+        elif tipoAcesso == "Diurna":
+            return self.valorDiariaDiurna
+        elif tipoAcesso == "Mensalista":
+            return self.mensalidade
+        else:
+            custoHora = float(tipoAcesso.split(":")[0]) * float(self.valorFracao)
+            custoMin = (
+                math.ceil(float(tipoAcesso.split(":")[1]) / 15.0) * self.valorFracao
+            )
+            custoAcesso = custoHora * (1 - (self.valorHoraCheia)) + custoMin
+            return custoAcesso
 
-    def GetValorContratante(self, param):
-        if param == 'AM31J':
-            return 25
-        if param == 'RM3A9':
-            return 27
-        if param == 'HI139':
-            return 30
-        if param == 'G49NG':
-            return 300
-        return -1
+    def GetValorContratante(self, placa):
+        return self.GetValorAcesso(placa) * self.retorno
