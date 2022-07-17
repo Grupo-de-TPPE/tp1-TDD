@@ -2,7 +2,6 @@ from src.Acesso import Acesso
 import datetime
 import math
 
-
 class Estacionamento:
     def __init__(
         self,
@@ -38,7 +37,6 @@ class Estacionamento:
 
     def getPermanencia(self, placa):
         for i in self.acessos:
-            # print(f"{i.placa}={i.horaEntrada}")
             if i.placa == placa:
                 if i.horaEntrada == "Evento":
                     return [
@@ -60,8 +58,7 @@ class Estacionamento:
                 t1 = datetime.timedelta(hours=entrada.hour, minutes=entrada.minute)
                 t2 = datetime.timedelta(hours=saida.hour, minutes=saida.minute)
                 delta = t2 - t1
-
-                if t1 > t2:
+                if t1 > t2 and t1 > self.horarios[4] and t2 < self.horarios[5]:
                     return [
                         "Noturna",
                     ]
@@ -96,7 +93,7 @@ class Estacionamento:
         elif tipoAcesso == "Mensalista":
             return self.mensalidade
         else:
-            custoHora = float(tipoAcesso.split(":")[0]) * float(self.valorFracao)
+            custoHora = float(tipoAcesso.split(":")[0]) * float(self.valorFracao) * 4
             custoMin = (
                 math.ceil(float(tipoAcesso.split(":")[1]) / 15.0) * self.valorFracao
             )
