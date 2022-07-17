@@ -35,7 +35,9 @@ def testaValorAcesso(expected, values):
 
 
 @pytest.mark.parametrize('expected, values', [(25,['AM31J','Evento', 'Evento']),(27,['RM3A9', '20:00', '07:00']),(300,['G49NG', 'Mensalista', 'Mensalista']),
-(30,['HI139', '08:30', '08:56'])])
+(30,['HI139', '08:30', '08:56']),(45,['AM321', '8:00','8:45'])])
 def testaValorContratante(expected, values):
     estacionamento[0].AddAcesso(values[0], values[1], values[2])
     assert estacionamento[0].GetValorContratante(values[0]) == expected
+
+
