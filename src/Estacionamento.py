@@ -107,8 +107,7 @@ class Estacionamento:
     def GetValorContratante(self, placa):
         return round(self.GetValorAcesso(placa) * self.retorno, 2)
 
-    def getTotalApurado(self):
-        if self.retorno == 0.5:
-            return 442.0
-        else:
-            return 263.4
+    def GetTotalApurado(self):
+        for i in self.acessos:
+            self.total += self.GetValorContratante(i.placa)
+        return round(self.total, 2)

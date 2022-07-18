@@ -1,6 +1,7 @@
 import datetime
 import pytest
 from optparse import Values
+
 from src.Estacionamento import Estacionamento
 
 
@@ -122,23 +123,35 @@ def testaValorContratante(expected, values, setupTest):
 
 
 @pytest.mark.funcional
-def testaValorApurado(setupTest):
-    setupTest[0].AddAcesso("HI139", "08:30", "08:56")  ## 60
-    setupTest[0].AddAcesso("AM31J", "Mensalista", "Mensalista")  ## 600
-    setupTest[0].AddAcesso("AC50M", "8:00", "18:00")  ## 120
-    setupTest[0].AddAcesso("G49NG", "19:01", "07:50")  ## 54
-    setupTest[0].AddAcesso("RM3A9", "Evento", "Evento")  ## 50
-
-    assert setupTest[0].getTotalApurado() == 442.0
-
-
-@pytest.mark.funcional
-def testaValorApurado2(setupTest):
-    setupTest[1].AddAcesso("HI139", "08:30", "09:30")  ## 72
-    setupTest[1].AddAcesso("AM31J", "15:12", "16:00")  ## 72
-    setupTest[1].AddAcesso("AC50M", "8:00", "18:00")  ## 70
-    setupTest[1].AddAcesso("G49NG", "21:36", "06:12")  ## 21
-    setupTest[1].AddAcesso("N4GN3", "08:00", "09:48")  ## 72+72
-    setupTest[1].AddAcesso("RM3A9", "Evento", "Evento")  ## 60
-
-    assert setupTest[1].getTotalApurado() == 263.4
+@pytest.mark.parametrize(
+    "index, expected, values",
+    [
+        (
+            0,
+            442.0,
+            [
+                ["HI139", "08:30", "08:56"],
+                ["AM31J", "Mensalista", "Mensalista"],
+                ["AC50M", "8:00", "18:00"],
+                ["G49NG", "19:01", "07:50"],
+                ["RM3A9", "Evento", "Evento"],
+            ],
+        ),
+        (
+            1,
+            263.4,
+            [
+                ["HI139", "08:30", "09:30"],
+                ["AM31J", "15:12", "16:00"],
+                ["AC50M", "8:00", "18:00"],
+                ["G49NG", "21:36", "06:12"],
+                ["N4GN3", "08:00", "09:48"],
+                ["RM3A9", "Evento", "Evento"],
+            ],
+        ),
+    ],
+)
+def testaValorApuradoContratante(expected, values, index, setupTest):
+    for i in values:
+        setupTest[index].AddAcesso(i[0], i[1], i[2])
+    assert setupTest[index].GetTotalApurado() == expected
