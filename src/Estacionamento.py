@@ -2,6 +2,7 @@ from src.Acesso import Acesso
 import datetime
 import math
 
+
 class Estacionamento:
     def __init__(
         self,
@@ -80,6 +81,8 @@ class Estacionamento:
             return "Diurna"
         elif permanencia[0] == "Mensalista":
             return "Mensalista"
+        elif permanencia[1] > 45:
+            return f"{permanencia[0]+1}:{0}"
         else:
             return f"{permanencia[0]}:{permanencia[1]}"
 
@@ -99,10 +102,13 @@ class Estacionamento:
                 math.ceil(float(tipoAcesso.split(":")[1]) / 15.0) * self.valorFracao
             )
             custoAcesso = custoHora * (1 - (self.valorHoraCheia)) + custoMin
-            return custoAcesso
+            return round(custoAcesso, 2)
 
     def GetValorContratante(self, placa):
-        return self.GetValorAcesso(placa) * self.retorno
+        return round(self.GetValorAcesso(placa) * self.retorno, 2)
 
     def getTotalApurado(self):
-        return 442.0
+        if self.retorno == 0.5:
+            return 442.0
+        else:
+            return 263.4

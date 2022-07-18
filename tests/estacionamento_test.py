@@ -32,7 +32,14 @@ def setupTest():
             valorDiariaDiurna=70,
             mensalidade=455,
             valorEvento=60,
-            horarios=(24, 24, 21, 7, 21, 7),
+            horarios=(
+                24,
+                24,
+                21,
+                7,
+                datetime.timedelta(hours=21),
+                datetime.timedelta(hours=7),
+            ),
             capacidade=120,
             retorno=0.6,
         ),
@@ -43,7 +50,14 @@ def setupTest():
             valorDiariaDiurna=50,
             mensalidade=350,
             valorEvento=40,
-            horarios=(6, 22, 20, 8, 20, 8),
+            horarios=(
+                6,
+                22,
+                20,
+                8,
+                datetime.timedelta(hours=20),
+                datetime.timedelta(hours=8),
+            ),
             capacidade=600,
             retorno=0.7,
         ),
@@ -116,3 +130,15 @@ def testaValorApurado(setupTest):
     setupTest[0].AddAcesso("RM3A9", "Evento", "Evento")  ## 50
 
     assert setupTest[0].getTotalApurado() == 442.0
+
+
+@pytest.mark.funcional
+def testaValorApurado2(setupTest):
+    setupTest[1].AddAcesso("HI139", "08:30", "09:30")  ## 72
+    setupTest[1].AddAcesso("AM31J", "15:12", "16:00")  ## 72
+    setupTest[1].AddAcesso("AC50M", "8:00", "18:00")  ## 70
+    setupTest[1].AddAcesso("G49NG", "21:36", "06:12")  ## 21
+    setupTest[1].AddAcesso("N4GN3", "08:00", "09:48")  ## 72+72
+    setupTest[1].AddAcesso("RM3A9", "Evento", "Evento")  ## 60
+
+    assert setupTest[1].getTotalApurado() == 263.4
