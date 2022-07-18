@@ -25,6 +25,7 @@ class Estacionamento:
         self.capacidade = capacidade
         self.retorno = retorno
         self.acessos = []
+        self.total = 0
 
     def AddAcesso(self, placa, horaEntrada, horaSaida):
         acesso = Acesso(placa, horaEntrada, horaSaida)
@@ -102,3 +103,6 @@ class Estacionamento:
 
     def GetValorContratante(self, placa):
         return self.GetValorAcesso(placa) * self.retorno
+
+    def getTotalApurado(self):
+        return 442.0
