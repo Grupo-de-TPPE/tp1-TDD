@@ -1,4 +1,6 @@
 from src.Acesso import Acesso
+from src.Exceptions import DescricaoEmBrancoException, ValorInvalidoException
+import re
 import datetime
 import math
 
@@ -16,15 +18,94 @@ class Estacionamento:
         capacidade,
         retorno,
     ):
-        self.valorFracao = valorFracao
-        self.valorHoraCheia = valorHoraCheia
-        self.valorDiariaDiurna = valorDiariaDiurna
-        self.valorDiariaNoturna = valorDiariaNoturna
-        self.mensalidade = mensalidade
-        self.valorEvento = valorEvento
+        if valorFracao == "":
+            raise DescricaoEmBrancoException("valorFracao")
+        elif valorHoraCheia == "":
+            raise DescricaoEmBrancoException("valorHoraCheia")
+        elif valorDiariaDiurna == "":
+            raise DescricaoEmBrancoException("valorDiariaDiurna")
+        elif valorDiariaNoturna == "":
+            raise DescricaoEmBrancoException("valorDiariaNoturna")
+        elif mensalidade == "":
+            raise DescricaoEmBrancoException("mensalidade")
+        elif valorEvento == "":
+            raise DescricaoEmBrancoException("valorEvento")
+        elif horarios == "":
+            raise DescricaoEmBrancoException("horarios")
+        elif capacidade == "":
+            raise DescricaoEmBrancoException("capacidade")
+        elif retorno == "":
+            raise DescricaoEmBrancoException("retorno")
+
+        try:
+            self.valorFracao = float(valorFracao)
+        except:
+            raise ValorInvalidoException("Valor Fração inválido")
+
+        try:
+            self.valorHoraCheia = float(valorHoraCheia)/100
+        except:
+            raise ValorInvalidoException("Valor hora cheia inválido")
+
+        try:
+            self.valorDiariaDiurna = float(valorDiariaDiurna)
+        except:
+            raise ValorInvalidoException("Valor diária Diurna inválido")
+
+        try:
+            self.valorDiariaNoturna = float(valorDiariaNoturna)/100
+        except:
+            raise ValorInvalidoException("Valor diária Noturna inválido")
+
+        try:
+            self.mensalidade = float(mensalidade)
+        except:
+            raise ValorInvalidoException("Valor acesso mensalidade inválido")
+
+        try:
+            self.valorEvento = float(valorEvento)
+        except:
+            raise ValorInvalidoException("Valor acesso evento inválido")
+
+        for i in range(6):
+            if not re.match("[0-1][0-9]|[2][0-3]:[0-5][0-9]", str(horarios[i])):
+                raise ValorInvalidoException(
+                    str(i + 1) + "º hora inválida: " + str(horarios[i])
+                )
+
+        try:
+            horarios[4] = datetime.timedelta(
+                hours=int(horarios[4][0:2]), minutes=int(horarios[4][3:5])
+            )
+        except:
+            raise ValorInvalidoException(
+                "4º hora inválida: " + str(horarios[4])
+            )
+
+        try:
+            horarios[5] = datetime.timedelta(
+                hours=int(horarios[5][0:2]), minutes=int(horarios[5][3:5])
+            )
+        except:
+            raise ValorInvalidoException(
+                "5º hora inválida: " + str(horarios[5])
+            )
         self.horarios = horarios
-        self.capacidade = capacidade
-        self.retorno = retorno
+
+        try:
+            self.capacidade = int(capacidade)
+        except:
+            raise ValorInvalidoException("capacidade")
+
+        try:
+            self.capacidade = int(capacidade)
+        except:
+            raise ValorInvalidoException("capacidade")
+
+        try:
+            self.retorno = float(retorno)/100
+        except:
+            raise ValorInvalidoException("retorno")
         self.acessos = []
         self.total = 0
 
@@ -40,11 +121,11 @@ class Estacionamento:
     def getPermanencia(self, placa):
         for i in self.acessos:
             if i.placa == placa:
-                if i.horaEntrada == "Evento":
+                if i.horaEntrada.lower() == "evento":
                     return [
                         "Evento",
                     ]
-                elif i.horaEntrada == "Mensalista":
+                elif i.horaEntrada.lower() == "mensalista":
                     return [
                         "Mensalista",
                     ]
