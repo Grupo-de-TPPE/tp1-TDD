@@ -67,11 +67,11 @@ def setupTest():
 
 @pytest.mark.funcional
 def testaCadastroUmVeiculo(setupTest):
-    setupTest[0].AddAcesso("HI139", "08:30", "08:56")
-    setupTest[0].AddAcesso("G49NG", "Mensalista", "Mensalista")
-    setupTest[0].AddAcesso("AC50M", "08:30", "18:00")
-    setupTest[0].AddAcesso("RM3A9", "20:00", "07:00")
-    setupTest[0].AddAcesso("AM31J", "Evento", "Evento")
+    setupTest[0].addAcesso("HI139", "08:30", "08:56")
+    setupTest[0].addAcesso("G49NG", "Mensalista", "Mensalista")
+    setupTest[0].addAcesso("AC50M", "08:30", "18:00")
+    setupTest[0].addAcesso("RM3A9", "20:00", "07:00")
+    setupTest[0].addAcesso("AM31J", "Evento", "Evento")
 
     assert (setupTest[0].getAcessos()) != 0
 
@@ -87,8 +87,8 @@ def testaCadastroUmVeiculo(setupTest):
     ],
 )
 def testaTipoAcessoPorPlaca1(expected, values, setupTest):
-    setupTest[0].AddAcesso(values[0], values[1], values[2])
-    assert setupTest[0].FindTipoAcesso(values[0]) == expected
+    setupTest[0].addAcesso(values[0], values[1], values[2])
+    assert setupTest[0].findTipoAcesso(values[0]) == expected
 
 
 @pytest.mark.funcional
@@ -102,8 +102,8 @@ def testaTipoAcessoPorPlaca1(expected, values, setupTest):
     ],
 )
 def testaValorAcesso(expected, values, setupTest):
-    setupTest[0].AddAcesso(values[0], values[1], values[2])
-    assert setupTest[0].GetValorAcesso(values[0]) == expected
+    setupTest[0].addAcesso(values[0], values[1], values[2])
+    assert setupTest[0].getValorAcesso(values[0]) == expected
 
 
 @pytest.mark.funcional
@@ -118,8 +118,8 @@ def testaValorAcesso(expected, values, setupTest):
     ],
 )
 def testaValorContratante(expected, values, setupTest):
-    setupTest[0].AddAcesso(values[0], values[1], values[2])
-    assert setupTest[0].GetValorContratante(values[0]) == expected
+    setupTest[0].addAcesso(values[0], values[1], values[2])
+    assert setupTest[0].getValorContratante(values[0]) == expected
 
 
 @pytest.mark.funcional
@@ -153,5 +153,5 @@ def testaValorContratante(expected, values, setupTest):
 )
 def testaValorApuradoContratante(expected, values, index, setupTest):
     for i in values:
-        setupTest[index].AddAcesso(i[0], i[1], i[2])
-    assert setupTest[index].GetTotalApurado() == expected
+        setupTest[index].addAcesso(i[0], i[1], i[2])
+    assert setupTest[index].getTotalApurado() == expected
