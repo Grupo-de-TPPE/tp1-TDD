@@ -4,7 +4,6 @@ import re
 import datetime
 import math
 
-
 class Estacionamento:
     def __init__(
         self,
@@ -167,6 +166,18 @@ class Estacionamento:
         else:
             return f"{permanencia[0]}:{permanencia[1]}"
 
+    def GetValorContratante(self, placa):
+        return round(self.GetValorAcesso(placa) * self.retorno, 2)
+
+    def CalcularCustoHora(self, tipoAcesso):
+        return float(tipoAcesso.split(":")[0]) * float(self.valorFracao) * 4
+
+    def CalcularCustoMinuto(self, tipoAcesso):
+        return math.ceil(float(tipoAcesso.split(":")[1]) / 15.0) * self.valorFracao
+    
+    def CalcularCustoAcesso(self, tipoAcesso):
+        return self.CalcularCustoHora(tipoAcesso) * (1 - (self.valorHoraCheia)) + self.CalcularCustoMinuto(tipoAcesso)
+    
     def GetValorAcesso(self, placa):
         tipoAcesso = self.FindTipoAcesso(placa)
         if tipoAcesso == "Evento":
@@ -178,15 +189,7 @@ class Estacionamento:
         elif tipoAcesso == "Mensalista":
             return self.mensalidade
         else:
-            custoHora = float(tipoAcesso.split(":")[0]) * float(self.valorFracao) * 4
-            custoMin = (
-                math.ceil(float(tipoAcesso.split(":")[1]) / 15.0) * self.valorFracao
-            )
-            custoAcesso = custoHora * (1 - (self.valorHoraCheia)) + custoMin
-            return round(custoAcesso, 2)
-
-    def GetValorContratante(self, placa):
-        return round(self.GetValorAcesso(placa) * self.retorno, 2)
+            return round(self.CalcularCustoAcesso(tipoAcesso), 2)
 
     def GetTotalApurado(self):
         for i in self.acessos:
