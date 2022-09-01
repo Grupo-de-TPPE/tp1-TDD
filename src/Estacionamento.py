@@ -5,6 +5,15 @@ import datetime
 import math
 
 class Estacionamento:
+    MINUTO_EM_SEGUNDOS = 60
+    HORA_EM_SEGUNDOS = MINUTO_EM_SEGUNDOS * 60
+    FRACAO_DE_HORA = 15.0
+    QUANTIDADE_DE_FRACAO_POR_HORA = 60 / FRACAO_DE_HORA
+    MINIMO_PARA_DIARIA = 9
+    DIARIA_EM_SEGUNDOS = MINIMO_PARA_DIARIA * HORA_EM_SEGUNDOS
+    MINIMO_PARA_HORA_CHEIA = (QUANTIDADE_DE_FRACAO_POR_HORA - 1) * FRACAO_DE_HORA
+    PORCENTAGEM = 100
+    
     def __init__(
         self,
         valorFracao,
@@ -42,7 +51,7 @@ class Estacionamento:
             raise ValorInvalidoException("Valor Fração inválido")
 
         try:
-            self.valorHoraCheia = float(valorHoraCheia)/100
+            self.valorHoraCheia = float(valorHoraCheia)/self.PORCENTAGEM
         except:
             raise ValorInvalidoException("Valor hora cheia inválido")
 
@@ -52,7 +61,7 @@ class Estacionamento:
             raise ValorInvalidoException("Valor diária Diurna inválido")
 
         try:
-            self.valorDiariaNoturna = float(valorDiariaNoturna)/100
+            self.valorDiariaNoturna = float(valorDiariaNoturna)/self.PORCENTAGEM
         except:
             raise ValorInvalidoException("Valor diária Noturna inválido")
 
@@ -102,7 +111,7 @@ class Estacionamento:
             raise ValorInvalidoException("capacidade")
 
         try:
-            self.retorno = float(retorno)/100
+            self.retorno = float(retorno)/self.PORCENTAGEM
         except:
             raise ValorInvalidoException("retorno")
         self.acessos = []
@@ -144,12 +153,12 @@ class Estacionamento:
                     return [
                         "Noturna",
                     ]
-                if delta.seconds > 32400:
+                if delta.seconds > self.DIARIA_EM_SEGUNDOS:
                     return [
                         "Diurna",
                     ]
 
-                return [delta.seconds // 3600, delta.seconds % 3600 // 60]
+                return [delta.seconds // self.HORA_EM_SEGUNDOS, delta.seconds % self.HORA_EM_SEGUNDOS // self.MINUTO_EM_SEGUNDOS]
 
     def FindTipoAcesso(self, placa):
         permanencia = self.getPermanencia(placa)
@@ -161,7 +170,7 @@ class Estacionamento:
             return "Diurna"
         elif permanencia[0] == "Mensalista":
             return "Mensalista"
-        elif permanencia[1] > 45:
+        elif permanencia[1] > self.MINIMO_PARA_HORA_CHEIA:
             return f"{permanencia[0]+1}:{0}"
         else:
             return f"{permanencia[0]}:{permanencia[1]}"
@@ -170,10 +179,10 @@ class Estacionamento:
         return round(self.GetValorAcesso(placa) * self.retorno, 2)
 
     def CalcularCustoHora(self, tipoAcesso):
-        return float(tipoAcesso.split(":")[0]) * float(self.valorFracao) * 4
+        return float(tipoAcesso.split(":")[0]) * float(self.valorFracao) * self.QUANTIDADE_DE_FRACAO_POR_HORA
 
     def CalcularCustoMinuto(self, tipoAcesso):
-        return math.ceil(float(tipoAcesso.split(":")[1]) / 15.0) * self.valorFracao
+        return math.ceil(float(tipoAcesso.split(":")[1]) / self.FRACAO_DE_HORA) * self.valorFracao
     
     def CalcularCustoAcesso(self, tipoAcesso):
         return self.CalcularCustoHora(tipoAcesso) * (1 - (self.valorHoraCheia)) + self.CalcularCustoMinuto(tipoAcesso)
