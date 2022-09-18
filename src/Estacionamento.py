@@ -4,8 +4,12 @@ import re
 import datetime
 import math
 
-
 class Estacionamento:
+    FRACAO_DE_HORA = 15.0
+    QUANTIDADE_DE_FRACAO_POR_HORA = 60 / FRACAO_DE_HORA
+    MINIMO_PARA_HORA_CHEIA = (QUANTIDADE_DE_FRACAO_POR_HORA - 1) * FRACAO_DE_HORA
+    PORCENTAGEM = 100
+    
     def __init__(
         self,
         valorFracao,
@@ -43,7 +47,7 @@ class Estacionamento:
             raise ValorInvalidoException("Valor Fração inválido")
 
         try:
-            self.valorHoraCheia = float(valorHoraCheia)/100
+            self.valorHoraCheia = float(valorHoraCheia)/self.PORCENTAGEM
         except:
             raise ValorInvalidoException("Valor hora cheia inválido")
 
@@ -53,7 +57,7 @@ class Estacionamento:
             raise ValorInvalidoException("Valor diária Diurna inválido")
 
         try:
-            self.valorDiariaNoturna = float(valorDiariaNoturna)/100
+            self.valorDiariaNoturna = float(valorDiariaNoturna)/self.PORCENTAGEM
         except:
             raise ValorInvalidoException("Valor diária Noturna inválido")
 
@@ -103,13 +107,13 @@ class Estacionamento:
             raise ValorInvalidoException("capacidade")
 
         try:
-            self.retorno = float(retorno)/100
+            self.retorno = float(retorno)/self.PORCENTAGEM
         except:
             raise ValorInvalidoException("retorno")
         self.acessos = []
         self.total = 0
 
-    def AddAcesso(self, placa, horaEntrada, horaSaida):
+    def addAcesso(self, placa, horaEntrada, horaSaida):
         acesso = Acesso(placa, horaEntrada, horaSaida)
         if self.acessos.append(acesso):
             return 1
@@ -119,40 +123,11 @@ class Estacionamento:
         return self.acessos
 
     def getPermanencia(self, placa):
-        for i in self.acessos:
+        for i in self.getAcessos():
             if i.placa == placa:
-                if i.horaEntrada.lower() == "evento":
-                    return [
-                        "Evento",
-                    ]
-                elif i.horaEntrada.lower() == "mensalista":
-                    return [
-                        "Mensalista",
-                    ]
+                return i.calculate(self.horarios[4], self.horarios[5])
 
-                entrada = datetime.time(
-                    hour=int(i.horaEntrada.split(":")[0]),
-                    minute=int(i.horaEntrada.split(":")[1]),
-                )
-                saida = datetime.time(
-                    hour=int(i.horaSaida.split(":")[0]),
-                    minute=int(i.horaSaida.split(":")[1]),
-                )
-                t1 = datetime.timedelta(hours=entrada.hour, minutes=entrada.minute)
-                t2 = datetime.timedelta(hours=saida.hour, minutes=saida.minute)
-                delta = t2 - t1
-                if t1 > t2 and t1 > self.horarios[4] and t2 < self.horarios[5]:
-                    return [
-                        "Noturna",
-                    ]
-                if delta.seconds > 32400:
-                    return [
-                        "Diurna",
-                    ]
-
-                return [delta.seconds // 3600, delta.seconds % 3600 // 60]
-
-    def FindTipoAcesso(self, placa):
+    def findTipoAcesso(self, placa):
         permanencia = self.getPermanencia(placa)
         if permanencia[0] == "Evento":
             return "Evento"
@@ -162,13 +137,25 @@ class Estacionamento:
             return "Diurna"
         elif permanencia[0] == "Mensalista":
             return "Mensalista"
-        elif permanencia[1] > 45:
+        elif permanencia[1] > self.MINIMO_PARA_HORA_CHEIA:
             return f"{permanencia[0]+1}:{0}"
         else:
             return f"{permanencia[0]}:{permanencia[1]}"
 
-    def GetValorAcesso(self, placa):
-        tipoAcesso = self.FindTipoAcesso(placa)
+    def getValorContratante(self, placa):
+        return round(self.getValorAcesso(placa) * self.retorno, 2)
+
+    def calcularCustoHora(self, tipoAcesso):
+        return float(tipoAcesso.split(":")[0]) * float(self.valorFracao) * self.QUANTIDADE_DE_FRACAO_POR_HORA
+
+    def calcularCustoMinuto(self, tipoAcesso):
+        return math.ceil(float(tipoAcesso.split(":")[1]) / self.FRACAO_DE_HORA) * self.valorFracao
+    
+    def calcularCustoAcesso(self, tipoAcesso):
+        return self.calcularCustoHora(tipoAcesso) * (1 - (self.valorHoraCheia)) + self.calcularCustoMinuto(tipoAcesso)
+    
+    def getValorAcesso(self, placa):
+        tipoAcesso = self.findTipoAcesso(placa)
         if tipoAcesso == "Evento":
             return self.valorEvento
         elif tipoAcesso == "Noturna":
@@ -178,17 +165,9 @@ class Estacionamento:
         elif tipoAcesso == "Mensalista":
             return self.mensalidade
         else:
-            custoHora = float(tipoAcesso.split(":")[0]) * float(self.valorFracao) * 4
-            custoMin = (
-                math.ceil(float(tipoAcesso.split(":")[1]) / 15.0) * self.valorFracao
-            )
-            custoAcesso = custoHora * (1 - (self.valorHoraCheia)) + custoMin
-            return round(custoAcesso, 2)
+            return round(self.calcularCustoAcesso(tipoAcesso), 2)
 
-    def GetValorContratante(self, placa):
-        return round(self.GetValorAcesso(placa) * self.retorno, 2)
-
-    def GetTotalApurado(self):
+    def getTotalApurado(self):
         for i in self.acessos:
-            self.total += self.GetValorContratante(i.placa)
+            self.total += self.getValorContratante(i.placa)
         return round(self.total, 2)
