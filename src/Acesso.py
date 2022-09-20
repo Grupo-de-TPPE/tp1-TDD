@@ -44,6 +44,12 @@ class Acesso:
 
         return hora >= 0 and hora <= 23 and minuto >= 0 and minuto <= 59
     
+    def getHora(self, hora):
+        return datetime.time(
+            hour=int(hora.split(":")[0]),
+            minute=int(hora.split(":")[1]),
+        )
+    
     def calculate(self, hora1, hora2):
 
         if self.horaEntrada.lower() == "evento" or self.horaEntrada.lower() == "mensalista" :
@@ -51,14 +57,8 @@ class Acesso:
                 self.horaEntrada.lower().capitalize()
             ]
 
-        entrada = datetime.time(
-            hour=int(self.horaEntrada.split(":")[0]),
-            minute=int(self.horaEntrada.split(":")[1]),
-        )
-        saida = datetime.time(
-            hour=int(self.horaSaida.split(":")[0]),
-            minute=int(self.horaSaida.split(":")[1]),
-        )
+        entrada = self.getHora(self.horaEntrada)
+        saida = self.getHora(self.horaSaida)
 
         t1 = datetime.timedelta(hours=entrada.hour, minutes=entrada.minute)
         t2 = datetime.timedelta(hours=saida.hour, minutes=saida.minute)
