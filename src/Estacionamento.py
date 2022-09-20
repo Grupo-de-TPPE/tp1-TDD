@@ -22,24 +22,10 @@ class Estacionamento:
         capacidade,
         retorno,
     ):
-        if valorFracao == "":
-            raise DescricaoEmBrancoException("valorFracao")
-        elif valorHoraCheia == "":
-            raise DescricaoEmBrancoException("valorHoraCheia")
-        elif valorDiariaDiurna == "":
-            raise DescricaoEmBrancoException("valorDiariaDiurna")
-        elif valorDiariaNoturna == "":
-            raise DescricaoEmBrancoException("valorDiariaNoturna")
-        elif mensalidade == "":
-            raise DescricaoEmBrancoException("mensalidade")
-        elif valorEvento == "":
-            raise DescricaoEmBrancoException("valorEvento")
-        elif horarios == "":
-            raise DescricaoEmBrancoException("horarios")
-        elif capacidade == "":
-            raise DescricaoEmBrancoException("capacidade")
-        elif retorno == "":
-            raise DescricaoEmBrancoException("retorno")
+
+        for params in list(locals().keys()):
+            if params != 'self' and locals()[params] == "":
+                raise DescricaoEmBrancoException(params)
 
         try:
             self.valorFracao = float(valorFracao)
@@ -114,10 +100,7 @@ class Estacionamento:
         self.total = 0
 
     def addAcesso(self, placa, horaEntrada, horaSaida):
-        acesso = Acesso(placa, horaEntrada, horaSaida)
-        if self.acessos.append(acesso):
-            return 1
-        return -1
+        return 1 if self.acessos.append(Acesso(placa, horaEntrada, horaSaida)) else -1
 
     def getAcessos(self):
         return self.acessos
