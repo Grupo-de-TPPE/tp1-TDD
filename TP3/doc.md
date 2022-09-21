@@ -11,7 +11,7 @@ No projeto foi encontrado problemas desse tipo com os seguintes cheiros:
 
 - Código duplicado
 
-A solução encontrada foi a realização de uma "extração de método" de tal maneira que sempre que for necessário realizar tal rotina só é preciso fazer uma chamada para aquela função. (Link do commit)[https://github.com/Grupo-de-TPPE/tp1-TDD/pull/2/commits/c0626aa8288eb720fa0409bf3679d5e28dc5e0d8]
+A solução encontrada foi a realização de uma "extração de método" de tal maneira que sempre que for necessário realizar tal rotina só é preciso fazer uma chamada para aquela função. [Link do commit](https://github.com/Grupo-de-TPPE/tp1-TDD/pull/2/commits/c0626aa8288eb720fa0409bf3679d5e28dc5e0d8)
 
 ## Elegância
 
@@ -53,7 +53,7 @@ No projeto foi encontrado problemas desse tipo com os seguintes cheiros:
 
 - Códigos longos
 
-A solução encontrada foi a remoção de múltiplos condicionais encadeados com o uso de loops iterativos que o python permite, conforme pode ser visto no (commit)[https://github.com/Grupo-de-TPPE/tp1-TDD/pull/2/commits/9f99dcad5bbf11c178318042bedccac38cbd5cd3].
+A solução encontrada foi a remoção de múltiplos condicionais encadeados com o uso de loops iterativos que o python permite, conforme pode ser visto no [commit](https://github.com/Grupo-de-TPPE/tp1-TDD/pull/2/commits/9f99dcad5bbf11c178318042bedccac38cbd5cd3).
 
 
 ## Referências
